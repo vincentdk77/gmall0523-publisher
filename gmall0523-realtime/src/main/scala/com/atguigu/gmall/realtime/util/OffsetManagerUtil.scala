@@ -26,7 +26,7 @@ object OffsetManagerUtil {
     //关闭客户端
     jedis.close()
 
-    //将java的map转换为scala的map
+    //todo 将java的map转换为scala的map
     import scala.collection.JavaConverters._
     val oMap: Map[TopicPartition, Long] = offsetMap.asScala.map {
       case (partition, offset) => {
@@ -34,7 +34,7 @@ object OffsetManagerUtil {
         //Map[TopicPartition,Long]
         (new TopicPartition(topic, partition.toInt), offset.toLong)
       }
-    }.toMap
+    }.toMap //todo  将可变的map转成不可变的map
     oMap
   }
 

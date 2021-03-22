@@ -20,7 +20,7 @@ import scala.collection.mutable.ListBuffer
   * Author: Felix
   * Date: 2020/10/21
   * Desc:  日活业务
-  * 数据流转：行为日志-->logcontroller-->kafka-->当前类
+  * 数据流转：行为日志(启动日志)-->logcontroller-->kafka-->当前类-->ES
   */
 object DauApp {
   def main(args: Array[String]): Unit = {
@@ -69,7 +69,7 @@ object DauApp {
         jsonObject
       }
     }
-    //jsonObjDStream.print(1000)
+//    jsonObjDStream.print(1000)
 
 
     /*
@@ -121,8 +121,8 @@ object DauApp {
           //拼接操作redis的key
           var dauKey = "dau:" + dt
           val isFirst = jedis.sadd(dauKey, mid)
-          //设置key的失效时间
-          if (jedis.ttl(dauKey) < 0) {
+          //设置key的失效时间(1天，因为需求是日活)
+          if (jedis.ttl(dauKey) < 0) {//只在当前key没有设置失效时间（-1）的时候设置失效时间
             jedis.expire(dauKey, 3600 * 24)
           }
           if (isFirst == 1L) {
@@ -135,7 +135,7 @@ object DauApp {
       }
     }
 
-    //filteredDStream.count().print()
+//    filteredDStream.count().print()
 
     //将数据批量的保存到ES中
     filteredDStream.foreachRDD{
@@ -163,7 +163,7 @@ object DauApp {
 
             //将数据批量的保存到ES中
             val dt: String = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
-            MyESUtil.bulkInsert(dauInfoList,"gmall0523_dau_info_" + dt)
+            MyESUtil.bulkInsert(dauInfoList,"gmall2020_dau_info_" + dt)
           }
         }
         //提交偏移量到Redis中

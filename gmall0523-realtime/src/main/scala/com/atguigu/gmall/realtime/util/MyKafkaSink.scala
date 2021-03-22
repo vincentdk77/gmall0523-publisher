@@ -1,8 +1,7 @@
 package com.atguigu.gmall.realtime.util
 
 import java.util.Properties
-
-import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
+import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
 
 /**
   * Author: Felix

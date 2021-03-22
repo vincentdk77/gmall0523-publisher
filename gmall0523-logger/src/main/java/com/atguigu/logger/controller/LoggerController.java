@@ -44,7 +44,7 @@ public class LoggerController {
         JSONObject startJson = jsonObject.getJSONObject("start");
         if(startJson != null){
             //启动日志
-            kafkaTemplate.send("gmall_start_bak",mockLog);
+            kafkaTemplate.send("gmall_start_bak",mockLog);// TODO: 2021/3/22  这里没有设置幂等性，应该要设置一下幂等性!!!
         }else{
             //事件日志
             kafkaTemplate.send("gmall_event_bak",mockLog);
