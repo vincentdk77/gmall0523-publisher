@@ -58,10 +58,10 @@ object ProvinceInfoApp {
           }
         }
         provinceInfoRDD.saveToPhoenix(
-          "GMALL0523_PROVINCE_INFO",
+          "GMALL2020_PROVINCE_INFO",
           Seq("ID","NAME","AREA_CODE","ISO_CODE"),
           new Configuration,
-          Some("hadoop202,hadoop203,hadoop204:2181")
+          Some("hadoop102,hadoop103,hadoop104:2181")
         )
         //保存偏移量
         OffsetManagerUtil.saveOffset(topic,groupId,offsetRanges)

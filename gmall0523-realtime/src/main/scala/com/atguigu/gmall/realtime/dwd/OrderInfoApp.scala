@@ -96,13 +96,13 @@ object OrderInfoApp {
         //获取当前分区中获取下订单的用户
         val userIdList: List[Long] = orderInfoList.map(_.user_id)
 
-        //根据用户集合到Phoenix中查询，看看哪些用户下过单   坑1  字符串拼接
+        //根据用户集合到Phoenix中查询，看看哪些用户下过单   坑1  todo  字符串拼接(数据库中是字符串类型，类中是long类型)
         var sql: String =
           s"select user_id,if_consumed from user_status0523 where user_id in('${userIdList.mkString("','")}')"
 
         //执行sql从Phoenix获取数据
         val userStatusList: List[JSONObject] = PhoenixUtil.queryList(sql)
-        //获取消费过的用户id   坑2  大小写
+        //获取消费过的用户id   坑2  大小写  todo  phoneix中的字段名都是大写的，即使定义的时候写的是小写也会转为大写！
         val consumedUserIdList: List[String] = userStatusList.map(_.getString("USER_ID"))
         for (orderInfo <- orderInfoList) {
           //坑3    类型转换
@@ -275,7 +275,7 @@ object OrderInfoApp {
           "USER_STATUS0523",
           Seq("USER_ID","IF_CONSUMED"),
           new Configuration,
-          Some("hadoop202,hadoop203,hadoop204:2181")
+          Some("hadoop102,hadoop103,hadoop104:2181")
         )
 
         //3.2保存订单数据到ES中

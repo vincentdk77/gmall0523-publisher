@@ -18,7 +18,7 @@ object MyKafkaUtil {
   private val properties: Properties = MyPropertiesUtil.load("config.properties")
   val broker_list = properties.getProperty("kafka.broker.list")
 
-  // kafka消费者配置
+  // kafka消费者配置 todo  定义成可变的map，后面还有修改
   var kafkaParam = collection.mutable.Map(
     "bootstrap.servers" -> broker_list,//用于初始化链接到集群的地址
     "key.deserializer" -> classOf[StringDeserializer],

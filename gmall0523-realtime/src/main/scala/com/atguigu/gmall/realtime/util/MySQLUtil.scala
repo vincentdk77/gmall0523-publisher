@@ -22,9 +22,9 @@ object MySQLUtil {
     Class.forName("com.mysql.jdbc.Driver")
     //建立连接
     val conn: Connection = DriverManager.getConnection(
-      "jdbc:mysql://hadoop202:3306/gmall0523_rs?characterEncoding=utf-8&useSSL=false",
+      "jdbc:mysql://hadoop102:3306/gmall2020_rs?characterEncoding=utf-8&useSSL=false",
       "root",
-      "123456")
+      "root")
 
     //创建数据库操作对象
     val ps: PreparedStatement = conn.prepareStatement(sql)

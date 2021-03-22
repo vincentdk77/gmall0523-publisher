@@ -30,7 +30,7 @@ object MyESUtil {
   def build(): Unit = {
     jestFactory = new JestClientFactory
     jestFactory.setHttpClientConfig(new HttpClientConfig
-        .Builder("http://hadoop202:9200")
+        .Builder("http://hadoop102:9200")
         .multiThreaded(true)
         .maxTotalConnection(20)
         .connTimeout(10000)

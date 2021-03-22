@@ -116,7 +116,7 @@ object SkuInfoApp {
           "GMALL0523_SKU_INFO",
           Seq("ID", "SPU_ID", "PRICE", "SKU_NAME", "TM_ID", "CATEGORY3_ID", "CREATE_TIME", "CATEGORY3_NAME", "SPU_NAME", "TM_NAME")
           , new Configuration,
-          Some("hadoop202,hadoop203,hadoop204:2181"))
+          Some("hadoop102,hadoop103,hadoop104:2181"))
         OffsetManagerUtil.saveOffset(topic, groupId, offsetRanges)
       }
     }

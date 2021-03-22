@@ -30,7 +30,7 @@ object PhoenixUtil {
     //注册驱动
     Class.forName("org.apache.phoenix.jdbc.PhoenixDriver")
     //建立连接
-    val conn: Connection = DriverManager.getConnection("jdbc:phoenix:hadoop202,hadoop203,hadoop204:2181")
+    val conn: Connection = DriverManager.getConnection("jdbc:phoenix:hadoop102,hadoop103,hadoop104:2181")
     //创建数据库操作对象
     val ps: PreparedStatement = conn.prepareStatement(sql)
     //执行SQL语句

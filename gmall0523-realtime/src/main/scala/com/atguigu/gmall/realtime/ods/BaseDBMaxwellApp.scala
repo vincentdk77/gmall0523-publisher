@@ -19,7 +19,7 @@ object BaseDBMaxwellApp {
     val conf: SparkConf = new SparkConf().setAppName("BaseDBMaxwellApp").setMaster("local[4]")
     val ssc = new StreamingContext(conf,Seconds(5))
 
-    var topic = "gmall0523_db_m"
+    var topic = "gmall2020_db_m"
     var groupId = "base_db_maxwell_group"
 
     //从Redis中获取偏移量

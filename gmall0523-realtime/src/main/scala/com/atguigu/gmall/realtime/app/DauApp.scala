@@ -20,13 +20,14 @@ import scala.collection.mutable.ListBuffer
   * Author: Felix
   * Date: 2020/10/21
   * Desc:  日活业务
+  * 数据流转：行为日志-->logcontroller-->kafka-->当前类
   */
 object DauApp {
   def main(args: Array[String]): Unit = {
     val conf: SparkConf = new SparkConf().setMaster("local[4]").setAppName("DauApp")
     val ssc: StreamingContext = new StreamingContext(conf,Seconds(5))
-    var topic:String = "gmall_start_0523"
-    var groupId:String = "gmall_dau_0523"
+    var topic:String = "gmall_start_bak"
+    var groupId:String = "gmall_dau_bak"
 
     //从Redis中获取Kafka分区偏移量
     val offsetMap: Map[TopicPartition, Long] = OffsetManagerUtil.getOffset(topic,groupId)

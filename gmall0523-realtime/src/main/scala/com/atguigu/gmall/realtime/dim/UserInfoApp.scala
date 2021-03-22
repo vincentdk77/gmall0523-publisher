@@ -78,10 +78,10 @@ object UserInfoApp {
       rdd=>{
         import org.apache.phoenix.spark._
         rdd.saveToPhoenix(
-          "GMALL0523_USER_INFO",
+          "GMALL2020_USER_INFO",
           Seq("ID","USER_LEVEL","BIRTHDAY","GENDER","AGE_GROUP","GENDER_NAME"),
           new Configuration,
-          Some("hadoop202,hadoop203,hadoop204:2181")
+          Some("hadoop102,hadoop103,hadoop104:2181")
         )
         //1.6提交偏移量
         OffsetManagerUtil.saveOffset(topic,groupId,offsetRanges)

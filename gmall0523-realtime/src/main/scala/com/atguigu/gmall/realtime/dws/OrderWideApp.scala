@@ -196,7 +196,7 @@ object OrderWideApp {
           .option("isolationLevel", "NONE") // 设置事务
           .option("numPartitions", "4") // 设置并发
           .option("driver","ru.yandex.clickhouse.ClickHouseDriver")
-          .jdbc("jdbc:clickhouse://hadoop202:8123/default","t_order_wide_0523",new Properties())
+          .jdbc("jdbc:clickhouse://hadoop102:8123/default","t_order_wide_0523",new Properties())
 
 
         //将数据写回到Kafka dws_order_wide

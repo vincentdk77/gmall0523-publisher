@@ -59,7 +59,7 @@ object BaseCategory3App {
       rdd=>{
         rdd.saveToPhoenix("GMALL0523_BASE_CATEGORY3",
           Seq("ID", "NAME", "CATEGORY2_ID" )
-          ,new Configuration,Some("hadoop202,hadoop203,hadoop204:2181"))
+          ,new Configuration,Some("hadoop102,hadoop103,hadoop104:2181"))
         OffsetManagerUtil.saveOffset(topic,groupId, offsetRanges)
       }
     }
