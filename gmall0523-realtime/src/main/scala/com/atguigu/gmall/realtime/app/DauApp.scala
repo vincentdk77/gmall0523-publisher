@@ -106,6 +106,12 @@ object DauApp {
     */
     //通过Redis   对采集到的启动日志进行去重操作  方案2  以分区为单位对数据进行处理，每一个分区获取一次Redis的连接
     //redis 类型 set    key：  dau：2020-10-23    value: mid    expire   3600*24
+    // TODO: 这里其实有一个bug，如果已经去重，并存入redis，程序未执行完毕，此时ss挂了，那么es中并没有存入此次的数据，但是下次就不会生成这个mid的数据了！
+    //需要做故障恢复
+    // 解决：
+    // 存redis时，存入一个时间戳字段（zset类型），
+    // 再次执行前手动写一个程序（也可以在每个周期判断，但是影响效率）
+    // 判断当前es中的最大时间戳与redis的所有key的时间戳字段大小，如果redis中有大于es最大时间戳的，那么就删除该value
     val filteredDStream: DStream[JSONObject] = jsonObjDStream.mapPartitions {
       jsonObjItr => { //以分区为单位对数据进行处理
         //每一个分区获取一次Redis的连接
@@ -157,16 +163,21 @@ object DauApp {
                   "00",
                   jsonObj.getLong("ts")
                 )
-                (dauInfo.mid,dauInfo)
+                (dauInfo.mid,dauInfo)  //必须指定_id,才有可能保证kafka消费的幂等性！
               }
             }.toList
 
-            //将数据批量的保存到ES中
+            //将数据批量的保存到ES中 ，按照时间，每天一个索引名存储（统一建的mapping模板，自动获取到两个索引别名）
             val dt: String = new SimpleDateFormat("yyyy-MM-dd").format(new Date())
             MyESUtil.bulkInsert(dauInfoList,"gmall2020_dau_info_" + dt)
           }
         }
         //提交偏移量到Redis中
+        // todo 为什么不提交kafka offset？
+        // 因为提交offset必须要InputDStream[ConsumerRecord[String, String]] 这种结构
+        // 在实际计算中，数据难免发生转变，或聚合，或关联，一旦发生转变，就无法在利用以下语句进行偏
+        //移量的提交：xxDstream.asInstanceOf[CanCommitOffsets].commitAsync(offsetRanges)，
+        // 而最终的dstrean不是这个类型，所以没法提交，只能存入其他地方
         OffsetManagerUtil.saveOffset(topic,groupId,offsetRanges)
       }
     }

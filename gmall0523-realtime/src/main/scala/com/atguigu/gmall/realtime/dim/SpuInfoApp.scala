@@ -58,7 +58,7 @@ object SpuInfoApp {
     //保存到Hbase
     import org.apache.phoenix.spark._
     objectDstream.foreachRDD{rdd=>
-      rdd.saveToPhoenix("GMALL0523_SPU_INFO",Seq("ID", "SPU_NAME"  )
+      rdd.saveToPhoenix("GMALL2020_SPU_INFO",Seq("ID", "SPU_NAME"  )
         ,new Configuration,Some("hadoop102,hadoop103,hadoop104:2181"))
       OffsetManagerUtil.saveOffset(topic,groupId, offsetRanges)
     }

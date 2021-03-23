@@ -61,15 +61,16 @@ object OrderDetailApp {
 
     //orderDetailDstream.print(1000)
 
-    //关联维度数据  因为我们这里做了维度退化，所以订单明细直接和商品维度进行关联即可
-    //以分区为单位进行处理
+    //todo 关联维度数据  因为我们这里做了维度退化，所以订单明细直接和商品维度进行关联即可
+    // （在SkuInfoApp中退化，也就是商品提前与其他维度关联，前提是维度字段不发生变化！，如果会变化还是要用一个个的join）
+    // 关联方式有两种：1、以分区为单位进行处理（服务器差）当前是这种方式 2、广播变量（driver服务器好的情况） skuInfoApp中是这种方式
     val orderDetailWithSkuDStream: DStream[OrderDetail] = orderDetailDstream.mapPartitions {
       orderDetailItr => {
         val orderDetailList: List[OrderDetail] = orderDetailItr.toList
         //从订单明细中获取所有的商品id
         val skuIdList: List[Long] = orderDetailList.map(_.sku_id)
         //根据商品id到Phoenix中查询出所有的商品
-        var sql: String = s"select id ,tm_id,spu_id,category3_id,tm_name ,spu_name,category3_name  from gmall0523_sku_info where id in('${skuIdList.mkString("','")}')"
+        var sql: String = s"select id ,tm_id,spu_id,category3_id,tm_name ,spu_name,category3_name  from gmall2020_sku_info where id in('${skuIdList.mkString("','")}')"
         val skuJsonObjList: List[JSONObject] = PhoenixUtil.queryList(sql)
         val skuInfoMap: Map[String, SkuInfo] = skuJsonObjList.map {
           skuJsonObj => {

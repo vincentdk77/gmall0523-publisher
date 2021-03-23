@@ -61,25 +61,25 @@ object SkuInfoApp {
     val skuInfoDstream: DStream[SkuInfo] = objectDstream.transform {
       rdd => {
         //tm_name
-        val tmSql = "select id ,tm_name  from gmall0523_base_trademark"
+        val tmSql = "select id ,tm_name  from gmall2020_base_trademark"
         val tmList: List[JSONObject] = PhoenixUtil.queryList(tmSql)
         val tmMap: Map[String, JSONObject] = tmList.map(jsonObj => (jsonObj.getString("ID"), jsonObj)).toMap
 
         //category3
-        val category3Sql = "select id ,name from gmall0523_base_category3" //driver  周期性执行
+        val category3Sql = "select id ,name from gmall2020_base_category3" //driver  周期性执行
         val category3List: List[JSONObject] = PhoenixUtil.queryList(category3Sql)
         val category3Map: Map[String, JSONObject] = category3List.map(jsonObj => (jsonObj.getString("ID"), jsonObj)).toMap
 
         // spu
-        val spuSql = "select id ,spu_name  from gmall0523_spu_info" // spu
+        val spuSql = "select id ,spu_name  from gmall2020_spu_info" // spu
         val spuList: List[JSONObject] = PhoenixUtil.queryList(spuSql)
         val spuMap: Map[String, JSONObject] = spuList.map(jsonObj => (jsonObj.getString("ID"), jsonObj)).toMap
 
-        // 汇总到一个list 广播这个map
+        // 汇总到一个list 广播这个map  （可以一个个分发，也可以汇总成一个list来分发）
         val dimList = List[Map[String, JSONObject]](category3Map, tmMap, spuMap)
         val dimBC: Broadcast[List[Map[String, JSONObject]]] = ssc.sparkContext.broadcast(dimList)
 
-        val skuInfoRDD: RDD[SkuInfo] = rdd.map {
+        val skuInfoRDD: RDD[SkuInfo] = rdd.map { // TODO: 这里可以使用mappartition或者map都可以，因为里面没有访问数据源的操作
           skuInfo => {
             //ex
             val dimList: List[Map[String, JSONObject]] = dimBC.value
@@ -113,7 +113,7 @@ object SkuInfoApp {
     skuInfoDstream.foreachRDD {
       rdd => {
         rdd.saveToPhoenix(
-          "GMALL0523_SKU_INFO",
+          "GMALL2020_SKU_INFO",
           Seq("ID", "SPU_ID", "PRICE", "SKU_NAME", "TM_ID", "CATEGORY3_ID", "CREATE_TIME", "CATEGORY3_NAME", "SPU_NAME", "TM_NAME")
           , new Configuration,
           Some("hadoop102,hadoop103,hadoop104:2181"))

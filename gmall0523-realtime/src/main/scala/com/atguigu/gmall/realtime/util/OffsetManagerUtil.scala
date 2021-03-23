@@ -45,7 +45,7 @@ object OffsetManagerUtil {
     var offsetKey = "offset:" + topic + ":" + groupId
     //定义java的map集合，用于存放每个分区对应的偏移量
     val offsetMap: util.HashMap[String, String] = new util.HashMap[String,String]()
-    //对offsetRanges进行遍历，将数据封装offsetMap
+    //对offsetRanges进行遍历，将数据封装offsetMap todo 数组Array转map
     for (offsetRange <- offsetRanges) {
       val partitionId: Int = offsetRange.partition
       val fromOffset: Long = offsetRange.fromOffset

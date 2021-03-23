@@ -75,7 +75,7 @@ object OrderInfoApp {
         //获取用户id
         val userId: Long = orderInfo.user_id
         //根据用户id到Phoenix中查询是否下单过
-        var sql: String = s"select user_id,if_consumed from user_status0523 where user_id='${userId}'"
+        var sql: String = s"select user_id,if_consumed from user_status2020 where user_id='${userId}'"
         val userStatusList: List[JSONObject] = PhoenixUtil.queryList(sql)
         if (userStatusList != null && userStatusList.size > 0) {
           orderInfo.if_first_order = "0"
@@ -98,7 +98,7 @@ object OrderInfoApp {
 
         //根据用户集合到Phoenix中查询，看看哪些用户下过单   坑1  todo  字符串拼接(数据库中是字符串类型，类中是long类型)
         var sql: String =
-          s"select user_id,if_consumed from user_status0523 where user_id in('${userIdList.mkString("','")}')"
+          s"select user_id,if_consumed from user_status2020 where user_id in('${userIdList.mkString("','")}')"
 
         //执行sql从Phoenix获取数据
         val userStatusList: List[JSONObject] = PhoenixUtil.queryList(sql)
@@ -166,7 +166,7 @@ object OrderInfoApp {
         //获取当前分区中订单对应的省份id
         val provinceIdList: List[Long] = orderInfoList.map(_.province_id)
         //根据省份id到Phoenix中查询对应的省份
-        var sql: String = s"select id,name,area_code,iso_code from gmall0523_province_info where id in('${provinceIdList.mkString("','")}')"
+        var sql: String = s"select id,name,area_code,iso_code from gmall2020_province_info where id in('${provinceIdList.mkString("','")}')"
         val provinceInfoList: List[JSONObject] = PhoenixUtil.queryList(sql)
         val provinceInfoMap: Map[String, ProvinceInfo] = provinceInfoList.map {
           provinceJsonObj => {
@@ -194,7 +194,7 @@ object OrderInfoApp {
     val orderInfoWithProvinceDStream: DStream[OrderInfo] = orderInfoRealDStream.transform {
       rdd => {
         //从Phoenix中查询所有的省份数据
-        var sql: String = "select id,name,area_code,iso_code from gmall0523_province_info"
+        var sql: String = "select id,name,area_code,iso_code from gmall2020_province_info"
         val provinceInfoList: List[JSONObject] = PhoenixUtil.queryList(sql)
         val provinceInfoMap: Map[String, ProvinceInfo] = provinceInfoList.map {
           provinceJsonObj => {
@@ -231,7 +231,7 @@ object OrderInfoApp {
         //获取所有的用户id
         val userIdList: List[Long] = orderInfoList.map(_.user_id)
         //根据id拼接sql语句，到phoenix查询用户
-        var sql: String = s"select id,user_level,birthday,gender,age_group,gender_name from gmall0523_user_info where id in ('${userIdList.mkString("','")}')"
+        var sql: String = s"select id,user_level,birthday,gender,age_group,gender_name from gmall2020_user_info where id in ('${userIdList.mkString("','")}')"
         //当前分区中所有的下单用户
         val userList: List[JSONObject] = PhoenixUtil.queryList(sql)
         val userMap: Map[String, UserInfo] = userList.map {
@@ -272,7 +272,7 @@ object OrderInfoApp {
           orderInfo => UserStatus(orderInfo.user_id.toString, "1")
         }
         userStatusRDD.saveToPhoenix(
-          "USER_STATUS0523",
+          "USER_STATUS2020",
           Seq("USER_ID","IF_CONSUMED"),
           new Configuration,
           Some("hadoop102,hadoop103,hadoop104:2181")
@@ -283,7 +283,7 @@ object OrderInfoApp {
           orderInfoItr=>{
             val orderInfoList: List[(String, OrderInfo)] = orderInfoItr.toList.map(orderInfo=>(orderInfo.id.toString,orderInfo))
             val dateStr: String = new SimpleDateFormat("yyyyMMdd").format(new Date())
-            MyESUtil.bulkInsert(orderInfoList, "gmall0523_order_info_" + dateStr)
+            MyESUtil.bulkInsert(orderInfoList, "gmall2020_order_info_" + dateStr)
 
             //3.4写回到Kafka
             for ((orderInfoId,orderInfo) <- orderInfoList) {
