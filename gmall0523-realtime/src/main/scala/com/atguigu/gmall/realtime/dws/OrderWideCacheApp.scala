@@ -20,6 +20,7 @@ import scala.collection.mutable.ListBuffer
   * 双流Join ，使用缓存处理数据丢失问题
   * 与开窗+去重不同的是，使用缓存处理，两个流做满外连接 ，因为网络延迟等关系，不能保证每个窗口中的数据key都能匹配上，
   * 这样势必会出现三种情况：（some，some），（None，some），（Some,None）,根据这三种情况，下面做一下详细解析：
+  *  todo 直接看代码即可！！！！
   * （some，some）
   *     1号流和2号流中key能正常进行逻辑运算，但是考虑到2号流后续可能会有剩下的数据到来（因为订单和明细是一对多的关系），所以需要将1号流中的key保存到redis，以等待接下来的数据
   *
@@ -27,7 +28,7 @@ import scala.collection.mutable.ListBuffer
   *     找不到1号流中对应key的数据，需要去redis中查找1号流的缓存，如果找不到，则缓存起来，等待1号流
   *
   * （Some，None）
-  *     找不到2号流中的数据，需要将key保存到redis，以等待接下来的数据，并且去reids中找2号流的缓存，如果有，则join，然后删除2号流的缓存
+  *     找不到2号流中的数据，需要将key保存到redis，以等待接下来的数据，并且去reids中找2号流的缓存，如果有，则join，然后删除2号流的缓存(不删也可以，到期自动删除)
   *
   *  Ø 优点
   *  不会造成数据重复
@@ -130,7 +131,7 @@ object OrderWideCacheApp {
         val orderInfoKey = "order_info:" + orderInfo.id
         val orderInfoJson = JSON.toJSONString(orderInfo, new SerializeConfig(true))
         jedis.setex(orderInfoKey, 600, orderInfoJson)
-        //2.2 主表读缓存
+        //2.2 读从表缓存
         // 从表缓存如何设计：    实现主表能够方便的通过orderId
         //redis  type?   set   key?  order_detail:0101  value? 多个orderDetailJson     expire? 600
         val orderDetailKey = "order_detail:" + orderInfo.id
@@ -144,7 +145,7 @@ object OrderWideCacheApp {
 
       } else {
         val orderDetail: OrderDetail = orderDetailOpt.get
-        //3.1 从表查询主表
+        //3.1 读主表缓存
         val orderInfoKey = "order_info:" + orderDetail.order_id
         val orderInfoJson: String = jedis.get(orderInfoKey)
         if (orderInfoJson != null && orderInfoJson.length > 0) {
