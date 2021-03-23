@@ -36,7 +36,7 @@ public class ESServiceImpl implements ESService {
     JestClient jestClient;
 
     /*
-    GET /gmall0523_dau_info_2020-10-24-query/_search
+    GET /gmall2020_dau_info_2020-10-24-query/_search
     {
       "query": {
         "match_all": {}
@@ -48,7 +48,7 @@ public class ESServiceImpl implements ESService {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(new MatchAllQueryBuilder());
         String query = sourceBuilder.toString();
-        String indexName = "gmall0523_dau_info_"+date+"-query";
+        String indexName = "gmall2020_dau_info_"+date+"-query";
         Search search = new Search.Builder(query)
                 .addIndex(indexName)
                 .build();
@@ -65,7 +65,7 @@ public class ESServiceImpl implements ESService {
     }
 
     /*
-    GET /gmall0523_dau_info_2020-10-24-query/_search
+    GET /gmall2020_dau_info_2020-10-24-query/_search
     {
       "aggs": {
         "groupBy_hr": {
@@ -88,7 +88,7 @@ public class ESServiceImpl implements ESService {
 
         sourceBuilder.aggregation(termsAggregationBuilder);
 
-        String indexName = "gmall0523_dau_info_"+ date +"-query";
+        String indexName = "gmall2020_dau_info_"+ date +"-query";
         String query = sourceBuilder.toString();
         Search search = new Search.Builder(query)
                 .addIndex(indexName)

@@ -72,6 +72,11 @@ object OrderWideApp {
       }
     }
 
+    // TODO: 这里orderDetailDStream不能直接打印，因为ConsumerRecord不能序列化！
+    // 可以先转化成String类型，再打印出来即可
+//    orderDetailDStream.print()  //报错
+//    orderDetailDStream.map(_.value()).print() //可以正常打印
+
     val orderInfoDS: DStream[OrderInfo] = orderInfoDStream.map {
       record => {
         val orderInfoStr: String = record.value()
@@ -90,7 +95,18 @@ object OrderWideApp {
     }
 
     //===============2.双流Join================
-    //开窗
+    //todo 通过滑动窗口+数据去重（实时项目使用的方式就是这种） 通过缓存处理的方式见OrderWideApp.scala
+    //    Ø 优点
+    //      处理代码相对简单
+    //    Ø 缺点
+    //      会造成数据重复，需要对重复数据进行处理
+    //    注意：必须是滑动窗口，如果是滚动的话，也没有解决join 问题。(也就是说滑动步长不能等于窗口大小!)
+    //    实时性降低了！（窗口大小跟机器的性能有关，机器越差，窗口越大！）
+    //    窗口设置必须保证两种流的数据都跑完了，否则还是错的!!!  不靠谱！
+
+    //todo 为什么滑动步长不能等于窗口大小？？
+
+    //开窗 （todo 不能用 ConsumerRecord 流来进行开窗，要转换一下）
     val orderInfoWindowDStream: DStream[OrderInfo] = orderInfoDS.window(Seconds(20),Seconds(5))
 
     val odrderDetaiWindowDStream: DStream[OrderDetail] = orderDetailDS.window(Seconds(20),Seconds(5))
@@ -112,7 +128,7 @@ object OrderWideApp {
     val joinedDStream: DStream[(Long, (OrderInfo, OrderDetail))] = orderInfoWithKeyDStream.join(orderDetailWithKeyDStream)
 
     //去重  Redis   type:set    key: order_join:[orderId]   value:orderDetailId  expire :600
-    val orderWideDStream: DStream[OrderWide] = joinedDStream.mapPartitions {
+    val orderWideDStream: DStream[OrderWide] = joinedDStream.mapPartitions { // TODO: 这里用mappartition是为了去重过滤+减少数据库连接数
       tupleItr => {
         val tupleList: List[(Long, (OrderInfo, OrderDetail))] = tupleItr.toList
         //获取Jedis客户端
@@ -196,7 +212,7 @@ object OrderWideApp {
           .option("isolationLevel", "NONE") // 设置事务
           .option("numPartitions", "4") // 设置并发
           .option("driver","ru.yandex.clickhouse.ClickHouseDriver")
-          .jdbc("jdbc:clickhouse://hadoop102:8123/default","t_order_wide_0523",new Properties())
+          .jdbc("jdbc:clickhouse://hadoop102:8123/default","t_order_wide_2020",new Properties())
 
 
         //将数据写回到Kafka dws_order_wide

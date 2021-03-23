@@ -13,7 +13,7 @@ import scala.collection.mutable.ListBuffer
   */
 object MySQLUtil {
   def main(args: Array[String]): Unit = {
-    val list: List[JSONObject] = queryList("select * from offset_0523")
+    val list: List[JSONObject] = queryList("select * from offset_2020")
     println(list)
   }
   def queryList(sql:String): List[JSONObject] ={

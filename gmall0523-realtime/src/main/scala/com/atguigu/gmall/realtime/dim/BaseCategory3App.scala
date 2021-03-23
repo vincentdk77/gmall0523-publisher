@@ -57,7 +57,7 @@ object BaseCategory3App {
     import org.apache.phoenix.spark._
     objectDstream.foreachRDD{
       rdd=>{
-        rdd.saveToPhoenix("GMALL0523_BASE_CATEGORY3",
+        rdd.saveToPhoenix("GMALL2020_BASE_CATEGORY3",
           Seq("ID", "NAME", "CATEGORY2_ID" )
           ,new Configuration,Some("hadoop102,hadoop103,hadoop104:2181"))
         OffsetManagerUtil.saveOffset(topic,groupId, offsetRanges)

@@ -18,7 +18,7 @@ object OffsetManagerM {
     * @return
     */
   def getOffset(topic: String, consumerGroupId: String): Map[TopicPartition, Long] = {
-    val sql=" select group_id,topic,topic_offset,partition_id from offset_0523 " +
+    val sql=" select group_id,topic,topic_offset,partition_id from offset_2020 " +
       " where topic='"+topic+"' and group_id='"+consumerGroupId+"'"
 
     val jsonObjList: List[JSONObject] = MySQLUtil.queryList(sql)

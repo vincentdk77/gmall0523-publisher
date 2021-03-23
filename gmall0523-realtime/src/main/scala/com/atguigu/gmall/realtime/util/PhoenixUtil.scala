@@ -22,7 +22,7 @@ import scala.collection.mutable.ListBuffer
 */
 object PhoenixUtil {
   def main(args: Array[String]): Unit = {
-    val list: List[JSONObject] = queryList("select * from user_status0523")
+    val list: List[JSONObject] = queryList("select * from user_status2020")
     println(list)
   }
   def queryList(sql:String): List[JSONObject] ={

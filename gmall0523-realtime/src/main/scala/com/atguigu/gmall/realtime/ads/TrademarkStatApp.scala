@@ -103,7 +103,7 @@ object TrademarkStatApp {
                 val partitionId: Int = offsetRange.partition
                 val untilOffset: Long = offsetRange.untilOffset
                 println("偏移量提交执行")
-                SQL("replace into offset_0523  values(?,?,?,?)").bind(groupId, topic, partitionId, untilOffset).update().apply()
+                SQL("replace into offset_2020  values(?,?,?,?)").bind(groupId, topic, partitionId, untilOffset).update().apply()
               }
             }
           }
@@ -143,7 +143,7 @@ object TrademarkStatApp {
               for (offsetRange <- offsetRanges) {
                 val partitionId: Int = offsetRange.partition
                 val untilOffset: Long = offsetRange.untilOffset
-                SQL("replace into offset_0523  values(?,?,?,?)").bind(groupId, topic, partitionId, untilOffset).update().apply()
+                SQL("replace into offset_2020  values(?,?,?,?)").bind(groupId, topic, partitionId, untilOffset).update().apply()
               }
             }
           }

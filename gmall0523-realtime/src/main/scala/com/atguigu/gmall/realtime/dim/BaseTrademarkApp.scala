@@ -57,7 +57,7 @@ object BaseTrademarkApp {
     import org.apache.phoenix.spark._
     //保存到Hbase
     objectDstream.foreachRDD{rdd=>
-      rdd.saveToPhoenix("GMALL0523_BASE_TRADEMARK",Seq("ID", "TM_NAME"  )
+      rdd.saveToPhoenix("GMALL2020_BASE_TRADEMARK",Seq("ID", "TM_NAME"  )
         ,new Configuration,Some("hadoop102,hadoop103,hadoop104:2181"))
       OffsetManagerUtil.saveOffset(topic,groupId, offsetRanges)
     }

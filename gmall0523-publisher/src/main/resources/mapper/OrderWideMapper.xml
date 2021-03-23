@@ -13,7 +13,7 @@
         select
             sum(final_detail_amount) sum_amount
         from
-            t_order_wide_0523
+            t_order_wide_2020
         where
             dt =#{date}
     </select>
@@ -22,7 +22,7 @@
         select
             toHour(create_time) hr ,sum(final_detail_amount) am
         from
-            t_order_wide_0523
+            t_order_wide_2020
         where dt= #{date}
             group by toHour(create_time)
     </select>
