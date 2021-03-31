@@ -29,7 +29,7 @@ object DauApp {
     var topic:String = "gmall_start_bak"
     var groupId:String = "gmall_dau_bak"
 
-    //从Redis中获取Kafka分区偏移量
+    //从Redis中获取Kafka分区偏移量 todo 这行代码只执行一次！！！在获取流之前
     val offsetMap: Map[TopicPartition, Long] = OffsetManagerUtil.getOffset(topic,groupId)
 
     var recordDStream: InputDStream[ConsumerRecord[String, String]] = null
@@ -178,6 +178,7 @@ object DauApp {
         // 在实际计算中，数据难免发生转变，或聚合，或关联，一旦发生转变，就无法在利用以下语句进行偏
         //移量的提交：xxDstream.asInstanceOf[CanCommitOffsets].commitAsync(offsetRanges)，
         // 而最终的dstrean不是这个类型，所以没法提交，只能存入其他地方
+        // TODO: 写在rdd算子外面，但是也可以执行，因为在dstream行动算子内部
         OffsetManagerUtil.saveOffset(topic,groupId,offsetRanges)
       }
     }

@@ -63,7 +63,7 @@ object BaseDBMaxwellApp {
 
             if(dataJsonObj!=null && !dataJsonObj.isEmpty ){
               if(
-                ("order_info".equals(tableName)&&"insert".equals(opType))
+                ("order_info".equals(tableName)&&"insert".equals(opType))//todo 用insert是因为业务是求首单
                   || (tableName.equals("order_detail") && "insert".equals(opType))
                   ||  tableName.equals("base_province")
                   ||  tableName.equals("user_info")

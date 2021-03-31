@@ -158,7 +158,7 @@ object OrderInfoApp {
 
     //===================5.和省份维度表进行关联====================
     /*
-    //5.1 方案1：以分区为单位，对订单数据进行处理，和Phoenix中的订单表进行关联
+    //5.1 方案1：以分区为单位，对订单数据进行处理，和Phoenix中的订单表进行关联  todo driver端内存不足的情况推荐
     val orderInfoWithProvinceDStream: DStream[OrderInfo] = orderInfoRealDStream.mapPartitions {
       orderInfoItr => {
         //转换为List
@@ -190,7 +190,7 @@ object OrderInfoApp {
     }
     orderInfoWithProvinceDStream.print(1000)
     */
-    //5.2 方案2  以采集周期为单位对数据进行处理 --->通过SQL将所有的省份查询出来
+    //5.2 方案2  以采集周期为单位对数据进行处理 --->通过SQL将所有的省份查询出来 todo driver端内存充足的情况推荐
     val orderInfoWithProvinceDStream: DStream[OrderInfo] = orderInfoRealDStream.transform {
       rdd => {
         //从Phoenix中查询所有的省份数据
