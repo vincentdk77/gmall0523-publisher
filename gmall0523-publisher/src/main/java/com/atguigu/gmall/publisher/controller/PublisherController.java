@@ -76,11 +76,11 @@ public class PublisherController {
     public Object realtimeHour(@RequestParam("id") String id,@RequestParam("date") String dt){
         if("dau".equals(id)){
             Map<String,Map<String,Long>> rsMap = new HashMap<>();
-            //获取今天的日活统计
+            //获取今天的日活统计(分时段)
             Map<String,Long> tdMap = esService.getDauHour(dt);
             rsMap.put("today",tdMap);
 
-            //获取昨天的日活统计
+            //获取昨天的日活统计(分时段)
             //根据当前日期获取昨天日期字符串
             String yd = getYd(dt);
             Map<String,Long> ydMap = esService.getDauHour(yd);

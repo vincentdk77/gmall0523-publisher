@@ -138,7 +138,7 @@ object OrderWideApp {
           val orderKey: String = "order_join:" + orderId
           val isNotExists: lang.Long = jedis.sadd(orderKey, orderDetail.id.toString)
           jedis.expire(orderKey, 600)
-          if (isNotExists == 1L) {
+          if (isNotExists == 1L) {//当前value在set中不存在，添加成功
             orderWideList.append(new OrderWide(orderInfo, orderDetail))
           }
         }

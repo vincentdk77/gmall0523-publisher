@@ -137,6 +137,8 @@ object OrderInfoApp {
         //判断在一个采集周期中，用户用户是否下了多个订单
         if (orderInfoList != null && orderInfoList.size > 1) {
           //如果下了多个订单，按照下单时间升序排序
+          //orderInfoList.sortBy(_.create_time)(Ordering.String)
+          //orderInfoList.sortWith(_.create_time<_.create_time)  todo 可以使用这种方式来代替
           val sortedOrderInfoList: List[OrderInfo] = orderInfoList.sortWith {
             (orderInfo1, orderInfo2) => {
               orderInfo1.create_time < orderInfo2.create_time
@@ -158,7 +160,7 @@ object OrderInfoApp {
 
     //===================5.和省份维度表进行关联====================
     /*
-    //5.1 方案1：以分区为单位，对订单数据进行处理，和Phoenix中的订单表进行关联  todo driver端内存不足的情况推荐
+    //5.1 方案1：以分区为单位，对订单数据进行处理，和Phoenix中的订单表进行关联  todo 一个分区存一份，driver端内存不足的情况推荐
     val orderInfoWithProvinceDStream: DStream[OrderInfo] = orderInfoRealDStream.mapPartitions {
       orderInfoItr => {
         //转换为List
@@ -190,7 +192,7 @@ object OrderInfoApp {
     }
     orderInfoWithProvinceDStream.print(1000)
     */
-    //5.2 方案2  以采集周期为单位对数据进行处理 --->通过SQL将所有的省份查询出来 todo driver端内存充足的情况推荐
+    //5.2 方案2  以采集周期为单位对数据进行处理 --->通过SQL将所有的省份查询出来 todo 一个executor存一份，driver端内存充足的情况推荐
     val orderInfoWithProvinceDStream: DStream[OrderInfo] = orderInfoRealDStream.transform {
       rdd => {
         //从Phoenix中查询所有的省份数据
